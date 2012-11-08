@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Info Window en GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+		var map = null;
+
+		function initialize(){
+			var myLatlng = new google.maps.LatLng(20.68017,-101.35437);
+			var myOptions = {
+			  zoom: 13,
+			  center: myLatlng,
+			  mapTypeId: google.maps.MapTypeId.ROADMAP
+			}
+
+			map = new google.maps.Map($("#map_canvas").get(0), myOptions);
+
+			var contentString = '<div id="div_ejemplo">'+
+			    '<p>Este es un ejemplo de <b>InfoWindow</b>, ' +
+			    'como puedes ver puedes agregar cualquier cosa, ' +
+			    'cualquier <em>HTML</em>.</p>' +
+			    '<p>Este InfoWindow tiene un ancho de 200px ' +
+			    'y automáticamente da los saltos de línea.</p>'+
+			    '<p>Para ver el tutorial <a href="http://jafrancov.com/2010/09/info-window-gmaps-api-v3/">'+
+			    'clickea aquí</a>.</p>'+
+			    '</div>';
+
+			var infowindow = new google.maps.InfoWindow({
+			    content: contentString,
+			    maxWidth: 200
+			});
+
+			var marker = new google.maps.Marker({
+			    position: myLatlng,
+			    map: map,
+			    title:"Ejemplo InfoWindow"
+			});
+
+			google.maps.event.addListener(marker, 'click', function() {
+			  infowindow.open(map,marker);
+			});
+		}
+		
+		$(document).ready(function(){
+			initialize();
+		});
+	</script>
+</head>
+<body>
+	<div id="map_canvas"></div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basics GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+		var map = null;
+	
+		function initialize() {
+			var myLatLng = new google.maps.LatLng(20.68009, -101.35403);
+			var myOptions = {
+			  zoom: 4,
+			  center: myLatLng,
+			  mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			map = new google.maps.Map($('#map_canvas')[0], myOptions);
+			var marker = new google.maps.Marker({
+			  position: myLatLng,
+			  map: map,
+			  title:"Hello World"
+			});
+		}
+		
+		$(document).ready(function(){
+			initialize();
+		});
+	</script>
+</head>
+<body>
+	<div id="map_canvas"></div>
+</body>
+</html>

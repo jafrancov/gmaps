@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geocode Simple GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+	var map = null;
+	var marker = null;
+
+	function initialize() {
+	    var myLatlng = new google.maps.LatLng(20.68009, -101.35403);
+	    var myOptions = {
+	        zoom: 4,
+	        center: myLatlng,
+	        mapTypeId: google.maps.MapTypeId.ROADMAP
+	    };
+	    map = new google.maps.Map($("#map_canvas").get(0), myOptions);
+		marker = new google.maps.Marker({ map: map });
+	}
+
+	$('#search').live('click', function() {
+	    var address = $('#address').val();
+	    var geocoder = new google.maps.Geocoder();
+	    geocoder.geocode({ 'address': address}, geocodeResult);
+	});
+
+	function geocodeResult(results, status) {
+	    if (status == 'OK') {
+			map.setCenter(results[0].geometry.location);
+	        $('#latitude').text(results[0].geometry.location.lat());
+			$('#longitude').text(results[0].geometry.location.lng());
+	        map.fitBounds(results[0].geometry.viewport);
+	        marker.setPosition(results[0].geometry.location);
+	    } else {
+	        alert("Geocoding no tuvo éxito debido a: " + status);
+	    }
+	}
+
+	$(document).ready(function() {
+	    initialize();
+	});
+	</script>
+</head>
+<body>
+	<div>
+		<input type="text" maxlength="100" id="address" style="width: 300px;" placeholder="Address">
+		<button type="button" id="search">Search</button>
+	</div>
+	<table>
+		<tr><td><strong>Lat:</strong></td><td style="width: 300px"><div id="latitude"></div></td></tr>
+		<tr><td><strong>Lng:</strong></td><td><div id="longitude"></div></td></tr>
+	</table>
+	
+	<div id="map_canvas"></div>
+</body>
+</html>

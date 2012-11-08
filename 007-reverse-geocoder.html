@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reverse Geocoder GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+	var geocoder = null;
+	var map = null;
+	var infowindow = null;
+	var marker = null;
+	
+	function initialize() {
+	  infowindow = new google.maps.InfoWindow();
+	  geocoder = new google.maps.Geocoder();
+	  var latlng = new google.maps.LatLng(20.68009, -101.35403);
+	  var mapOptions = {
+	    zoom: 4,
+	    center: latlng,
+	    mapTypeId: 'roadmap'
+	  }
+	  map = new google.maps.Map($('#map_canvas').get(0), mapOptions);
+	  marker = new google.maps.Marker({ map: map });
+	  google.maps.event.addListener(map, 'click', function(){ closeInfoWindow(); });
+	}
+	
+	$('#search').live('click', function() {
+		codeLatLng();
+	});
+	
+	function closeInfoWindow() {
+       	infowindow.close();
+    }
+
+	function codeLatLng() {
+	  var input = $('#latlng').val();
+	  var latlngStr = input.split(',', 2);
+	  var lat = parseFloat(latlngStr[0]);
+	  var lng = parseFloat(latlngStr[1]);
+	  var latlng = new google.maps.LatLng(lat, lng);
+	  geocoder.geocode({ latLng: latlng}, function(results, status) {
+	    if (status == google.maps.GeocoderStatus.OK) {
+	      if (results[0]) {
+			map.fitBounds(results[0].geometry.viewport);
+	        marker.setPosition(latlng);
+			$('#address').text(results[0].formatted_address);
+			infowindow.setContent(results[0].formatted_address);
+	        infowindow.open(map, marker);
+			google.maps.event.addListener(marker, 'click', function(){
+	            infowindow.setContent(results[0].formatted_address);
+		        infowindow.open(map, marker);
+	        });
+	      } else {
+	        alert('No results found');
+	      }
+	    } else {
+	      alert('Geocoder failed due to: ' + status);
+	    }
+	  });
+	}
+	
+	$(document).ready(function(){
+		initialize();
+	});
+	</script>
+</head>
+<body>
+	<div>
+      <input id="latlng" type="textbox" style="width: 300px;" value="20.68009, -101.35403">    
+	<table>
+		<tr><td ><strong>Address:</strong></td><td><div id="address"></div></td></tr>
+	</table>
+	<input type="button" id="search" value="Reverse Geocode">
+	</div>
+	<div id="map_canvas"></div>
+</body>
+</html>

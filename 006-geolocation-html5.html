@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geolocation with HTML5 API and GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+	var map = null;
+	var marker = new google.maps.Marker();
+
+	function initialize() {
+	    var myLatlng = new google.maps.LatLng(20.68009, -101.35403);
+	    var myOptions = {
+	        zoom: 4,
+	        center: myLatlng,
+	        mapTypeId: google.maps.MapTypeId.ROADMAP
+	    };
+	    map = new google.maps.Map($("#map_canvas").get(0), myOptions);
+	}
+	
+	$('#search').live('click', function() {
+		getGeolocation();
+	});
+
+	function getGeolocation() {
+		if (navigator.geolocation) {
+		    navigator.geolocation.getCurrentPosition(showPosition, handle_error);
+		} else {
+			alert("Ups!! No hay Geolocalización para ti, intenta con un navegador más actualizado.");
+		}
+	}
+
+	function showPosition(position) {
+		$('#latitude').text(position.coords.latitude);
+		$('#longitude').text(position.coords.longitude);
+		var current_position = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+		map.setZoom(15);
+		map.setCenter(current_position);
+		marker.setPosition(current_position);
+		marker.setMap(map);
+	}
+	
+	function handle_error(err) {
+		alert("Error " + err.code + ": " + err.message);
+	}
+
+	$(document).ready(function(){
+		initialize();
+	});
+	</script>
+</head>
+<body>
+	<div>
+		<button type="button" id="search" style="width: 200px; height: 30px;">Geolocate me!</button>
+	</div>
+	<table>
+		<tr><td><strong>Lat:</strong></td><td style="width: 300px"><div id="latitude"></div></td></tr>
+		<tr><td><strong>Lng:</strong></td><td><div id="longitude"></div></td></tr>
+	</table>
+	
+	<div id="map_canvas"></div>
+</body>
+</html>

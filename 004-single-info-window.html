@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Single Info Window Open GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#map_canvas		{ width: 990px; height: 500px; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+	var map = null;
+    var infoWindow = null;
+
+	function initialize() {
+        var myLatlng = new google.maps.LatLng(20.68017,-101.35437);
+        var myOptions = {
+          zoom: 13,
+          center: myLatlng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        map = new google.maps.Map($("#map_canvas").get(0), myOptions);
+        infoWindow = new google.maps.InfoWindow();
+        google.maps.event.addListener(map, 'click', function(){ closeInfoWindow(); });
+
+		createMarker('Marker 1', 20.68017, -101.35437);
+		createMarker('Marker 2', 20.66057, -101.37325);
+		createMarker('Marker 3', 20.67133, -101.32999);
+    }
+
+    function closeInfoWindow() {
+        infoWindow.close();
+    }
+
+	function createMarker(name, lat, lng){
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, lng),
+            draggable: true,
+			map: map,
+        });
+		google.maps.event.addListener(marker, 'dragstart', function(){ closeInfoWindow(); });
+        google.maps.event.addListener(marker, 'dragend', function(){ openInfoWindow(marker, name); });
+		google.maps.event.addListener(marker, 'click', function(){ openInfoWindow(marker, name); });
+	}
+	
+	function openInfoWindow(marker, content) {
+        var markerLatLng = marker.getPosition();
+        infoWindow.setContent([
+            '<div >',
+            'Las coordenadas del <b>',
+            content,
+            '</b> son:<br/>',
+            markerLatLng.lat(),
+            ', ',
+            markerLatLng.lng(),
+            '<br/><br/>Arrástrame para actualizar la posición.',
+            '<br/>O puedes hacer click en cualquier otro lado para cerrarme.',
+            '</div>'
+        ].join(''));
+        infoWindow.open(map, marker);
+    }
+
+    $(document).ready(function() {
+        initialize();
+    });
+	</script>
+</head>
+<body>
+	<div id="map_canvas"></div>
+</body>
+</html>
