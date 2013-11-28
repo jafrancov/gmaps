@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Directions and Routes with GMaps API v3 - Alex Franco</title>
+	<style type="text/css">
+		#results	{width: 990px; height: 500px }
+		div#results #map_canvas		{ width: 65%; height: 100%; float: left; }
+		div#results #directions_panel	{ width: 35%; height: 100%; overflow: auto; float: right; }
+	</style>
+	<script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript">
+	var map = null;
+	var directionsDisplay = null;
+	var directionsService = null;
+
+	function initialize() {
+	    var myLatlng = new google.maps.LatLng(20.68009, -101.35403);
+	    var myOptions = {
+	        zoom: 4,
+	        center: myLatlng,
+	        mapTypeId: google.maps.MapTypeId.ROADMAP
+	    };
+	    map = new google.maps.Map($("#map_canvas").get(0), myOptions);
+		directionsDisplay = new google.maps.DirectionsRenderer();
+		directionsService = new google.maps.DirectionsService();
+	}
+
+	function getDirections(){
+		var start = $('#start').val();
+		var end = $('#end').val();
+		if(!start || !end){
+			alert("Start and End addresses are required");
+			return;
+		}
+		var request = {
+		        origin: start,
+		        destination: end,
+		        travelMode: google.maps.DirectionsTravelMode[$('#travelMode').val()],
+		        unitSystem: google.maps.DirectionsUnitSystem[$('#unitSystem').val()],
+		        provideRouteAlternatives: true
+	    };
+		directionsService.route(request, function(response, status) {
+	        if (status == google.maps.DirectionsStatus.OK) {
+	            directionsDisplay.setMap(map);
+	            directionsDisplay.setPanel($("#directions_panel").get(0));
+	            directionsDisplay.setDirections(response);
+	            var summaryPanel = ($("#distance_panel").get(0));
+				summaryPanel.innerHTML = '';
+	            for (var j = 0; j < response.routes.length; j++){
+	            	var route = response.routes[j];
+	            	console.log(response.routes[j]);
+					var routeSegment = j + 1;
+					summaryPanel.innerHTML += '<b>Ruta ' + routeSegment + ': ';
+					summaryPanel.innerHTML += route.legs[0].distance.text;
+					summaryPanel.innerHTML += ' (' + route.legs[0].distance.value + 'm)<br><br>';
+	            }
+	        } else {
+	            alert("There is no directions available between these two points");
+	        }
+	    });
+	}
+
+	$('#search').live('click', function(){ getDirections(); });
+	$('.routeOptions').live('change', function(){ getDirections(); });
+	
+	$(document).ready(function() {
+	    initialize();
+	});
+	</script>
+</head>
+<body>
+	<div>
+		<p>
+		<label for="start">Start </label>
+		<input type="text" id="start" style="width: 300px;"placeholder="address or coordinates" />
+		<br/>
+		<label for="end">End </label>
+		<input type="text" id="end" style="width: 300px;" placeholder="address or coordinates" />
+		</p>
+		<p>Route Options 
+		<select id="travelMode" class="routeOptions">
+			<option value="DRIVING" selected="selected">Driving</option>
+          	<option value="BICYCLING">Bicycling</option>
+          	<option value="WALKING">Walking</option>
+      	</select>
+      	<select id="unitSystem" class="routeOptions">
+          	<option value="METRIC" selected="selected">Metric</option>
+          	<option value="IMPERIAL">Imperial</option>
+      	</select>
+		</p>
+		<p><button type="button" id="search" style="width: 200px; height: 30px;">Search Route</button></p>
+  	</div>
+	<div id="results" style="width: 990px; height: 500px;">
+		<div id="map_canvas" style="width: 65%; height: 100%; float: left;"></div>
+		<div id="routes_panel" style="width: 35%; height: 100%; overflow: auto; float: right;">
+			<div id="distance_panel" style="width: 100%; height: 20%;"></div>
+			<div id="directions_panel" style="width: 100%; height: 80%;"></div>
+		</div>
+	</div>
+</body>
+</html>
